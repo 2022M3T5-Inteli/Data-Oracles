@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+  <link href="./styles.css" rel="stylesheet">
+ 
+  <!-- JavaScript Bundle with Popper -->
+  
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <title>Document</title>
+</head>
+
+<body>
+
+  <container class="container-fluid d-flex p-4 full-wd">
+    <div class="col-8">
+      <img id="coolImg" src="./images/THE ORACLE.png" />
+    </div>
+    <div class="col-4 d-flex">
+      <form class="d-flex justify-content-center align-itens-center flex-column">
+        <div class="form-group p-2">
+          <label for="startDate">Data de Lançamento do Programa:</label>
+          <input id="startDate" class="form-control" type="datetime-local" step="900" />
+          <small id="emailHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group p-2">
+          <label for="startDate">Categoria:</label>
+          <select class="form-select" id="inputGroupSelect01">
+            <option value="CARROS E MOTORES">CARROS E MOTORES</option>
+            <option value="CULINARIO">CULINARIO</option>
+            <option value="DEBATE">DEBATE</option>
+            <option value="DOCUMENTARIO">DOCUMENTARIO</option>
+            <option value="EDUCATIVO">EDUCATIVO</option>
+            <option value="ENTREVISTA">ENTREVISTA</option>
+            <option value="ESPORTE">ESPORTE</option>
+            <option value="FEMININO">FEMININO</option>
+            <option value="FILME">FILME</option>
+            <option value="FUTEBOL">FUTEBOL</option>
+            <option value="GAME SHOW">GAME SHOW</option>
+            <option value="HUMORISTICO">HUMORISTICO</option>
+            <option value="JORNALISMO">JORNALISMO</option>
+            <option value="MINISSERIE">MINISSERIE</option>
+            <option value="MUSICAL">MUSICAL</option>
+            <option value="NOVELA">NOVELA</option>
+            <option value="OUTROS">OUTROS</option>
+            <option value="POLITICO">POLITICO</option>
+            <option value="PREMIACAO">PREMIACAO</option>
+            <option value="REALITY SHOW">REALITY SHOW</option>
+            <option value="RELIGIOSO">RELIGIOSO</option>
+            <option value="REPORTAGEM">REPORTAGEM</option>
+            <option value="RURAL">RURAL</option>
+            <option value="SERIES">SERIES</option>
+            <option value="SHOW">SHOW</option>
+            <option value="SORTEIO">SORTEIO</option>
+            <option value="TELE VENDAS">TELE VENDAS</option>
+          </select>
+          <small id="emailHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group p-2">
+          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+          <label class="form-check-label" for="exampleCheck1">Feriado</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+    
+  </container>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+  crossorigin="anonymous"></script>
+
+  <script src="./index.js"></script>
+
+</body>
+
+</html>

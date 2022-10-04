@@ -1,0 +1,39 @@
+.bg-img {
+  background-image: url("./images/THE\ ORACLE.png");
+  background-color: red;
+}
+
+.full-wd {
+  height: 100vh;
+}
+
+#coolImg {
+  height: 97vh;
+}
+
+#coolImgSec {
+  height: 100%;
+}
+
+.result-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-block {
+  font-family: "Montserrat", sans-serif;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.back-arrow {
+  font-size: 1.6em;
+  transition: 0.4s ease all;
+}
+
+.back-arrow:hover {
+  transform: scale(1.2,1.2);
+  cursor: pointer;
+}

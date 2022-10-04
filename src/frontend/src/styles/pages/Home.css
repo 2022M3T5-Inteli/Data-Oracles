@@ -1,0 +1,16 @@
+.next-button {
+  transition: 0.2s ease all;
+}
+
+.next-button:hover{
+  transform: scale(1.2,1.2);
+  cursor: pointer;
+}
+
+.bottom-img {
+  transition: 0.2s ease all;
+}
+
+.bottom-img:hover {
+  transform: rotate3d(-1,1,0, 20deg);
+}

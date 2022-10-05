@@ -15,13 +15,19 @@ import {
   FormLabel,
   Select,
   Checkbox,
+  SimpleGrid,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
 
 //Styling
 import "../styles/pages/SelectPeriod.css";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCalendar,
+  FaCalendarAlt,
+} from "react-icons/fa";
 import {
   useNavigate,
   useSearchParams,
@@ -32,7 +38,8 @@ import {
 const SelectPeriod = () => {
   const navigation = useNavigate();
   const [searchParams] = useSearchParams();
-  const [moment, setMoment] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [isHoliday, setIsHoliday] = useState(false);
 
   const category = searchParams.get("category") || "";
@@ -45,67 +52,86 @@ const SelectPeriod = () => {
       pathname: "/results",
       search: createSearchParams({
         category: category,
-        moment: moment,
+        moment: `${date}T${time}`,
         isHoliday: isHoliday.toString(),
       }).toString(),
     });
   };
 
   return (
-    <Grid templateRows="1fr 4fr" height={"100vh"} width={"full"} position={"absolute"}>
-      <GridItem
-        colSpan={12}
-        fontSize="7xl"
-        fontWeight={"semibold"}
-        float="left"
-        padding={5}
-        paddingLeft={10}
-        bg={"#fefefe"}
-      >
-        <Flex p={3} h={"full"} w={"full"} justify={"start"} align={"center"}>
-          <Flex
-            w={60}
-            justify={"space-around"}
-            align={"center"}
-            className={"next-button"}
-            onClick={goBackHandler}
-          >
-            <FaArrowLeft fontSize={40} />
-            <Heading padding={0} margin={0} fontSize={"5xl"}>
-              Voltar
-            </Heading>
+    <SimpleGrid
+      height={"100vh"}
+      width={"full"}
+      position={"absolute"}
+      columns={12}
+    >
+      <GridItem colSpan={7} h="full" className="left-section">
+        <Flex
+          grow={1}
+          h={"full"}
+          justify={"space-between"}
+          p={20}
+          align={"center"}
+        >
+          <Box className="icon-button icon-button-left" onClick={goBackHandler}>
+            <FaArrowLeft fontSize={40} className={"next-icon"} />
+          </Box>
+          <Flex gap={5}>
+            <Heading size={"xl"}>Selecione o Período</Heading>
+            <FaCalendarAlt fontSize={40} />
           </Flex>
         </Flex>
       </GridItem>
-      <GridItem colSpan={7}>
-        <Flex h={"full"} justify={"start"} align={"flex-end"}>
-          <Image
-            src="assets/img/1.png"
-            h={[0, 0, 400, 500, "3xl"]}
-            objectFit={"contain"}
-            className={"bottom-img"}
-          />
-        </Flex>
-      </GridItem>
-      <GridItem rowSpan={2} colSpan={5} padding={10} display={"flex"}>
+      <GridItem colSpan={5} h="full" className="right-section">
         <Flex
-          p={3}
+          p={10}
           h={"full"}
           w={"full"}
-          justify={"space-between"}
+          justify={"center"}
           direction={"column"}
           align={"end"}
         >
           <HStack w={"full"} h="full" justify={"end"}>
             <FormControl>
-              <FormLabel>Momento:</FormLabel>
+              <FormLabel>Data:</FormLabel>
               <Input
-                type={"datetime-local"}
-                step={900}
+                type={"date"}
                 onChange={(e) => {
-                  setMoment(e.target.value);
+                  setDate(e.target.value);
                 }}
               />
+              <FormLabel>Faixa Horária:</FormLabel>
+              <Select
+                onChange={(e) => {
+                  setTime(e.target.value);
+                }}
+                placeholder="Faixa"
+              >
+                <option value="00:00">00:00 - 01:00</option>
+                <option value="01:00">01:00 - 02:00</option>
+                <option value="02:00">02:00 - 03:00</option>
+                <option value="03:00">03:00 - 04:00</option>
+                <option value="04:00">04:00 - 05:00</option>
+                <option value="05:00">05:00 - 06:00</option>
+                <option value="06:00">06:00 - 07:00</option>
+                <option value="07:00">07:00 - 08:00</option>
+                <option value="08:00">08:00 - 09:00</option>
+                <option value="09:00">09:00 - 10:00</option>
+                <option value="10:00">10:00 - 11:00</option>
+                <option value="11:00">11:00 - 12:00</option>
+                <option value="12:00">12:00 - 13:00</option>
+                <option value="13:00">13:00 - 14:00</option>
+                <option value="14:00">14:00 - 15:00</option>
+                <option value="15:00">15:00 - 16:00</option>
+                <option value="16:00">16:00 - 17:00</option>
+                <option value="17:00">17:00 - 18:00</option>
+                <option value="18:00">18:00 - 19:00</option>
+                <option value="19:00">19:00 - 20:00</option>
+                <option value="20:00">20:00 - 21:00</option>
+                <option value="21:00">21:00 - 22:00</option>
+                <option value="22:00">22:00 - 23:00</option>
+                <option value="23:00">23:00 - 00:00</option>
+              </Select>
               <Checkbox
                 onChange={(e) => {
                   setIsHoliday(e.target.checked);
@@ -117,19 +143,18 @@ const SelectPeriod = () => {
           </HStack>
           <Flex
             w={60}
-            justify={"space-around"}
+            justify={"end"}
             align={"center"}
             className={"next-button"}
             onClick={goNextHandler}
           >
-            <Heading padding={0} margin={0} fontSize={"5xl"}>
-              Próximo
-            </Heading>
-            <FaArrowRight fontSize={40} />
+            <Box className="icon-button icon-button-right">
+              <FaArrowRight fontSize={40} className={"next-icon"} />
+            </Box>
           </Flex>
         </Flex>
       </GridItem>
-    </Grid>
+    </SimpleGrid>
   );
 };
 

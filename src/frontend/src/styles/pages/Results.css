@@ -8,5 +8,15 @@
 }
 
 .bottom-img:hover {
-  transform: rotate3d(-1,1,0, 20deg);
+  transform: rotate3d(-1, 1, 0, 20deg);
+}
+
+.result-container {
+  background: rgb(36, 4, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(36, 4, 0, 1) 0%,
+    rgba(9, 113, 121, 1) 0%,
+    rgba(255, 0, 236, 1) 100%
+  );
 }

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const BASE_URL = "http://localhost:5000";
+
 export interface IPredictionInputItem {
   data_hora: string;
   feriado: boolean;
@@ -21,7 +23,41 @@ export async function getPredictionRat({
   categoria,
 }: IPredictionInputItem) {
   const data: IPredictionRequestt = await axios.post(
-    `http://127.0.0.1:5000/api/knn/rat`,
+    `${BASE_URL}/api/lgbm/rat`,
+    {
+      data_hora,
+      feriado,
+      categoria,
+    },
+    { headers: { "Content-Type": "application/json" } }
+  );
+
+  return data.data;
+}
+export async function getPredictionFid({
+  data_hora,
+  feriado,
+  categoria,
+}: IPredictionInputItem) {
+  const data: IPredictionRequestt = await axios.post(
+    `${BASE_URL}/api/lgbm/fid`,
+    {
+      data_hora,
+      feriado,
+      categoria,
+    },
+    { headers: { "Content-Type": "application/json" } }
+  );
+
+  return data.data;
+}
+export async function getPredictionShare({
+  data_hora,
+  feriado,
+  categoria,
+}: IPredictionInputItem) {
+  const data: IPredictionRequestt = await axios.post(
+    `${BASE_URL}/api/lgbm/share`,
     {
       data_hora,
       feriado,

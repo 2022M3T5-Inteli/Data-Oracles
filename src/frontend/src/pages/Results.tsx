@@ -1,6 +1,14 @@
 import { useContext, useEffect } from "react";
 
-import { Flex, Grid, GridItem, Heading, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Image,
+  SimpleGrid,
+} from "@chakra-ui/react";
 
 //Styling
 import "../styles/pages/Results.css";
@@ -11,7 +19,8 @@ import { ApplicationContext } from "../context/ModelContext";
 // Page Structure
 
 const Results = () => {
-  const { makePrediction, predictionList } = useContext(ApplicationContext);
+  const { makePrediction, predictionList, hasError, cleanErrors } =
+    useContext(ApplicationContext);
   const navigation = useNavigate();
 
   const [searchParams] = useSearchParams();
@@ -28,31 +37,46 @@ const Results = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (hasError) {
+      navigation("/Error");
+    }
+  }, [hasError]);
+
   const closeHandler = () => {
     navigation("/home");
   };
 
   return (
-    <Grid
-      templateRows="0fr 4fr"
+    <SimpleGrid
       height={"100vh"}
       width={"full"}
       position={"absolute"}
+      columns={12}
+      className={"result-container"}
     >
-      <GridItem
-        colSpan={12}
-        fontSize="7xl"
-        fontWeight={"semibold"}
-        float="left"
-        padding={5}
-        paddingLeft={10}
-        bg={"#fefefe"}
-      >
-        <Flex p={3} h={"full"} w={"full"} justify={"start"} align={"center"}>
-          <Flex w={"full"} justify={"space-between"} align={"center"}>
-            <Heading padding={0} margin={0} fontSize={"5xl"}>
-              Resultados
-            </Heading>
+      <GridItem colSpan={7} h="full">
+        <Flex
+          grow={1}
+          h={"full"}
+          justify={"center"}
+          align={"center"}
+          direction={"column"}
+        >
+          <Heading size={"xl"} color={"white"}>
+            Resultados
+          </Heading>
+        </Flex>
+      </GridItem>
+      <GridItem colSpan={5} h="full">
+        <Flex
+          h={"full"}
+          w={"full"}
+          justify={"start"}
+          direction={"column"}
+          align={"center"}
+        >
+          <Flex w={"full"} justify={"end"} align={"center"} p={10}>
             <Heading
               fontSize={"4xl"}
               className={"next-button"}
@@ -61,24 +85,19 @@ const Results = () => {
               X
             </Heading>
           </Flex>
+          <Flex
+            height={"full"}
+            width={"full"}
+            justify={"center"}
+            align={"center"}
+          >
+            <Box>
+              <ResultTable items={predictionList} />
+            </Box>
+          </Flex>
         </Flex>
       </GridItem>
-      <GridItem colSpan={8}>
-        <Flex h={"full"} justify={"start"} align={"flex-end"}>
-          <Image
-            src="assets/img/3.png"
-            h={[0, 0, 400, 500, "3xl"]}
-            objectFit={"contain"}
-            className={"bottom-img"}
-          />
-        </Flex>
-      </GridItem>
-      <GridItem rowSpan={2} colSpan={4} padding={10} display={"flex"}>
-        <Flex p={3} h={"full"} w={"full"} justify={"center"} align={"center"}>
-          <ResultTable items={predictionList} />
-        </Flex>
-      </GridItem>
-    </Grid>
+    </SimpleGrid>
   );
 };
 

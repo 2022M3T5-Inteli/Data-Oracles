@@ -1,16 +1,31 @@
-.next-button {
-  transition: 0.2s ease all;
+.container {
+  background-image: linear-gradient(
+    90deg,
+    rgb(57, 220, 214) 0%,
+    rgb(255, 184, 239) 100%
+  );
 }
 
-.next-button:hover{
-  transform: scale(1.2,1.2);
+.right-section {
+  background-color: white;
+}
+
+.go-next-button {
+  padding: 1em;
+  border-radius: 80px;
+  text-align: center;
+  background-color: white;
+  transition: 0.6s ease all;
+}
+
+.go-next-button:hover {
   cursor: pointer;
-}
-
-.bottom-img {
-  transition: 0.2s ease all;
-}
-
-.bottom-img:hover {
-  transform: rotate3d(-1,1,0, 20deg);
+  background: rgb(36, 4, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(36, 4, 0, 1) 0%,
+    rgba(9, 113, 121, 1) 0%,
+    rgba(255, 0, 236, 1) 100%
+  );
+  color: white;
 }

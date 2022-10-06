@@ -22,7 +22,18 @@ Ademais, é disponibilizado também um site que possibilita de maneira intuitiva
 
 ## 🛠 Estrutura de pastas
 -Raiz<br>
-**|-->**
+**|-->** Documentos<br>
+&emsp;**|-->** Documentação do projeto<br>
+**|-->** Notebooks<br>
+&emsp;**|-->** Feature Engineering<br>
+&emsp;**|-->** Modelos Regressivos<br>
+**|-->** src<br>
+&emsp;**|-->** Backend<br>
+&emsp;**|-->** Frontend<br>
+**|-->** .gitignore<br>
+**|-->** README.md<br>
+
+
 
 ## 💻 Configuração para Desenvolvimento
 Aqui encontram-se todas as instruções necessárias para acessar as ferramentas e executar o backend e frontend

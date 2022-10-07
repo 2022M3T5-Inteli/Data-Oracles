@@ -33,11 +33,6 @@ Ademais, é disponibilizado também um site que possibilita de maneira intuitiva
 **|-->** .gitignore<br>
 **|-->** README.md<br>
 
-
-
-## 💻 Configuração para Desenvolvimento
-Aqui encontram-se todas as instruções necessárias para acessar as ferramentas e executar o backend e frontend
-
 ## 🗃 Histórico de lançamentos
 * 12/08/2022
     * Entendimento do negócio;<br>

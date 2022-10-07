@@ -3,7 +3,7 @@
   transition: 0.2s ease all;
   box-shadow: 0px 56px 59px rgba(255, 70, 230, 0.15);
   margin: 2em;
-  background-color: #FEFEFE;
+  background-color: #fefefe;
   border: #73b0ff27 solid 1px;
 }
 
@@ -12,7 +12,7 @@
 }
 .option-block:hover {
   transform: scale(1.1, 1.1);
-  
+
   border: #73b0ff27 solid 1px;
   cursor: pointer;
 }
@@ -22,5 +22,34 @@
 }
 
 .bottom-img:hover {
-  transform: rotate3d(-1,1,0, 20deg);
+  transform: rotate3d(-1, 1, 0, 20deg);
+}
+
+.icon-button {
+  box-shadow: 0px 4px 32px rgba(0, 0, 0, 0.25);
+  padding: 1em;
+  border-radius: 60px;
+  font-size: 1.2em;
+  transition: 0.2s ease all;
+}
+
+.icon-button:hover {
+  transform: scale(1.2, 1.2);
+  cursor: pointer;
+}
+
+.icon-button-right:hover {
+  color: white;
+  background: rgb(36, 4, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(36, 4, 0, 1) 0%,
+    rgba(9, 113, 121, 1) 0%,
+    rgba(255, 0, 236, 1) 100%
+  );
+}
+
+.icon-button-left:hover {
+  color: black;
+  background: white;
 }

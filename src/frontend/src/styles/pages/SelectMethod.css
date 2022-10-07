@@ -24,3 +24,15 @@
 .bottom-img:hover {
   transform: rotate3d(-1,1,0, 20deg);
 }
+
+.left-section {
+  color: white;
+  background: rgb(36, 4, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(5, 25,34, 1) 0%,
+    rgba(3, 54, 73, 1) 0%,
+    rgba(5, 81, 97, 1) 100%
+  );
+  
+}

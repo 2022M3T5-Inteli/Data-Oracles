@@ -8,6 +8,7 @@ import "./styles/root.css";
 
 import { animated } from "react-spring";
 import SelectMethodManual from "./pages/SelectMethodManual";
+import Error from "./pages/Error";
 
 // Pages
 
@@ -18,15 +19,21 @@ function MainRoute() {
   const transitions = useTransition(location, {
     from: {
       position: "absolute",
+      transform: "translate3d(-1000px,0,0)",
       opacity: 0,
-      transform: "translate3d(-800px,0px,0)",
     },
     enter: {
       position: "relative",
       opacity: 1,
+
       transform: "translate3d(0px,0px,0)",
     },
-    leave: { position: "absolute", opacity: 0, overflow: "hidden" },
+    leave: {
+      position: "absolute",
+      opacity: 0,
+      overflow: "hidden",
+      transform: "translate3d(1000px,0,0)",
+    },
   });
   return (
     <>
@@ -42,6 +49,7 @@ function MainRoute() {
             ></Route>
             <Route path="/SelectPeriod" element={<SelectPeriod />}></Route>
             <Route path="/Results" element={<Results />}></Route>
+            <Route path="/Error" element={<Error />}></Route>
           </Routes>
         </animated.div>
       ))}

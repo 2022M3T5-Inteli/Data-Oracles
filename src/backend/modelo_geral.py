@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class ModelTools:
     def __init__(self) -> None:
         pass
@@ -19,14 +22,14 @@ class ModelTools:
                    '50-59 anos | Rat%': 0, '60+ anos | Rat%': 0}
         return self._parse_predict(rat_map, rat_prediction)
 
-    def parse_predict_fid(self, fid_prediction):
-        prediction_list = []
+    # def parse_predict_fid(self, fid_prediction):
+    #     prediction_list = []
 
-        fid_map = {'Total Indivíduos | Fid%': 0, 'AB | Fid%': 0, 'C1 | Fid%': 0, 'C2 | Fid%': 0,
-                   'DE | Fid%': 0, 'Masculino | Fid%': 0, 'Feminino | Fid%': 0, '4-11 anos | Fid%': 0,
-                   '12-17 anos | Fid%': 0, '18-24 anos | Fid%': 0, '25-34 anos | Fid%': 0,
-                   '35-49 anos | Fid%': 0, '50-59 anos | Fid%': 0, '60+ anos | Fid%': 0}
-        return self._parse_predict(fid_map, fid_prediction)
+    #     fid_map = {'Total Indivíduos | Fid%': 0, 'AB | Fid%': 0, 'C1 | Fid%': 0, 'C2 | Fid%': 0,
+    #                'DE | Fid%': 0, 'Masculino | Fid%': 0, 'Feminino | Fid%': 0, '4-11 anos | Fid%': 0,
+    #                '12-17 anos | Fid%': 0, '18-24 anos | Fid%': 0, '25-34 anos | Fid%': 0,
+    #                '35-49 anos | Fid%': 0, '50-59 anos | Fid%': 0, '60+ anos | Fid%': 0}
+    #     return self._parse_predict(fid_map, fid_prediction)
 
     def parse_predict_share(self, share_prediction):
         share_map = {'Total Domicílios | Shr%': 0, 'AB | Shr%': 0, 'C1 | Shr%': 0, 'C2 | Shr%': 0,
@@ -40,16 +43,38 @@ class ModelTools:
 
 
 class ModeloGeral:
-    def __init__(self, modelo_base_rat, modelo_base_fid, modelo_base_share):
+    def __init__(self, modelo_base_rat, modelo_base_share):
         self.modelo_rat = modelo_base_rat
-        self.modelo_fid = modelo_base_fid
+        # self.modelo_fid = modelo_base_fid
         self.modelo_share = modelo_base_share
 
     def predict_rat(self, X):
         return self.modelo_rat.predict(X)
 
-    def predict_fid(self, X):
-        return self.modelo_fid.predict(X)
+    # def predict_fid(self, X):
+    #     return self.modelo_fid.predict(X)
 
     def predict_share(self, X):
         return self.modelo_share.predict(X)
+
+
+class ModeloGeralPeriodo(ModeloGeral):
+    def predict_share_hour(self, X):
+        start = float(X[0][0])
+        prediction_list = []
+        for i in range(0, 4):
+            X[0] = start
+            pred = super().predict_share(X)
+            prediction_list.append(pred[0])
+            start = start + 0.25
+        return [np.array(np.mean(prediction_list, axis=0)).tolist()]
+
+    def predict_rat_hour(self, X):
+        start = float(X[0][0])
+        prediction_list = []
+        for i in range(0, 4):
+            X[0] = start
+            pred = super().predict_rat(X)
+            prediction_list.append(pred[0])
+            start = start + 0.25
+        return [np.array(np.mean(prediction_list, axis=0)).tolist()]

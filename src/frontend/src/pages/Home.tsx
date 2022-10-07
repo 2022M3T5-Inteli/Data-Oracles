@@ -2,12 +2,17 @@ import * as React from "react";
 
 import {
   Box,
+  Center,
   Container,
   Flex,
   Grid,
   GridItem,
   Heading,
   Image,
+  Text,
+  SimpleGrid,
+  Img,
+  Button,
 } from "@chakra-ui/react";
 
 //Styling
@@ -24,50 +29,43 @@ const Home = () => {
   };
 
   return (
-    <Grid
-      templateRows="1fr 4fr"
-      height={"100vh"}
-      p={5}
-      width={"full"}
-      position={"absolute"}
+    <Flex
+      className="container"
+      grow={1}
+      h={"100vh"}
+      width="full"
+      justify={"center"}
+      textAlign={"end"}
+      align={["center", "center", "center", "end", "center", "center"]}
+      direction={"column"}
+      position="absolute"
     >
-      <GridItem
-        colSpan={12}
-        fontSize="7xl"
-        fontWeight={"semibold"}
-        float="left"
-        paddingLeft={10}
-        bg={"#fefefe"}
+      <Heading
+        p={6}
+        size={"2xl"}
+        color={"white"}
+        zIndex={1}
+        width={[0, 0, 0, 550, 0, 680]}
       >
-        <h1>O Oráculo</h1>
-      </GridItem>
-      <GridItem colSpan={7}>
-        <Flex h={"full"} justify={"start"} align={"flex-end"}>
-          <Image
-            src="assets/img/0.png"
-            h={[0, 0, 400, 500, "3xl"]}
-            objectFit={"contain"}
-            className={"bottom-img"}
-          />
-        </Flex>
-      </GridItem>
-      <GridItem rowSpan={2} colSpan={5} padding={10} display={"flex"}>
-        <Flex p={3} h={"full"} w={"full"} justify={"end"} align={"center"}>
-          <Flex
-            w={60}
-            justify={"space-around"}
-            align={"center"}
-            className={"next-button"}
-            onClick={nextClickHandler}
-          >
-            <Heading padding={0} margin={0} fontSize={"6xl"}>
-              Iniciar
-            </Heading>
-            <FaArrowRight fontSize={40} />
-          </Flex>
-        </Flex>
-      </GridItem>
-    </Grid>
+        Seja Bem-Vindo ao Oráculo
+      </Heading>
+      <Box
+        m={4}
+        w={200}
+        className={"go-next-button"}
+        onClick={nextClickHandler}
+        zIndex={1}
+      >
+        Iniciar
+      </Box>
+      <Img
+        src="/assets/img/robothead.png"
+        position={"absolute"}
+        left={-100}
+        bottom={-10}
+        height={[800, 800, 800, 800, 900]}
+      />
+    </Flex>
   );
 };
 

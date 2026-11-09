@@ -3,3 +3,238 @@ seed: 42
 
 caminhos:
   dados: data
+
+# Regra de negócio central: a previsão é feita com 28 dias de antecedência.
+horizonte_dias: 28
+
+dados:
+  inicio: 2023-01-01
+  fim_historico: 2024-12-31
+  dias_chegada: 28
+  hora_inicio: 6.0
+  blocos_por_dia: 96
+  passo_hora: 0.25
+  emissoras: [principal, concorrente_a, concorrente_b]
+  publicos: [total_dom, ab, c, de, masculino, feminino, "4_17", "18_34", "35_49", 50_mais]
+  publico_total: total_dom
+
+# Parâmetros que definem os padrões dos dados sintéticos (spec 02, §2).
+gerador:
+  tle:
+    base: 6.0
+    # picos da curva diária: [hora, altura, largura]
+    picos:
+      - [8.0, 7.0, 1.6]
+      - [12.5, 13.0, 1.6]
+      - [21.0, 37.0, 2.3]
+    fim_de_semana: 1.08
+    verao: 0.93
+    meses_verao: [12, 1, 2]
+    feriado_dia: 1.18
+    feriado_noite: 0.90
+    hora_corte_feriado: 18.0
+    sigma_dia: 0.025
+    queda_anual: 0.035
+  # apelo relativo de cada categoria na emissora principal
+  apelo_categoria:
+    JORNALISMO: 1.05
+    NOVELA: 1.55
+    FILME: 0.85
+    FUTEBOL: 1.75
+    REALITY SHOW: 1.45
+    FEMININO: 0.75
+    INFANTIL: 0.70
+    SHOW: 1.10
+    REPORTAGEM: 0.90
+    ESPORTE: 0.95
+    RURAL: 0.70
+    RELIGIOSO: 0.40
+    SERIES: 0.85
+    HUMORISTICO: 0.95
+    ENTREVISTA: 0.65
+  apelo_concorrente:
+    JORNALISMO: 0.50
+    NOVELA: 0.55
+    FILME: 0.55
+    FUTEBOL: 0.95
+    REALITY SHOW: 0.75
+    FEMININO: 0.38
+    INFANTIL: 0.38
+    SHOW: 0.55
+    REPORTAGEM: 0.42
+    ESPORTE: 0.50
+    RURAL: 0.32
+    RELIGIOSO: 0.30
+    SERIES: 0.45
+    HUMORISTICO: 0.50
+    ENTREVISTA: 0.35
+  outros:
+    base: 0.86
+    crescimento_anual: 0.08
+  edicoes:
+    categorias: [NOVELA, REALITY SHOW]
+    dias_novela: 180
+    sigma_apelo: 0.16
+  sigma_episodio: 0.09
+  sigma_concorrente: 0.08
+  sigma_bloco: 0.03
+  reality_meses: [1, 2, 3, 4]
+  futebol_pausa_meses: [12, 1]
+  eventos:
+    por_mes: 1.0
+    hora_inicio: [20.0, 21.5]
+    duracao_horas: [2.0, 3.0]
+    multiplicador_apelo: 2.6
+    tipos: [jogo_exclusivo, final_reality, show_especial]
+  choque_chegada: true
+  choque_outros: 0.55
+  feriados:
+    - 2023-01-01
+    - 2023-02-20
+    - 2023-02-21
+    - 2023-04-07
+    - 2023-04-21
+    - 2023-05-01
+    - 2023-06-08
+    - 2023-09-07
+    - 2023-10-12
+    - 2023-11-02
+    - 2023-11-15
+    - 2023-12-25
+    - 2024-01-01
+    - 2024-02-12
+    - 2024-02-13
+    - 2024-03-29
+    - 2024-04-21
+    - 2024-05-01
+    - 2024-05-30
+    - 2024-09-07
+    - 2024-10-12
+    - 2024-11-02
+    - 2024-11-15
+    - 2024-11-20
+    - 2024-12-25
+    - 2025-01-01
+  publicos:
+    # fator: escala média do público em relação ao total; sigma: ruído de amostra do painel
+    total_dom: {fator: 1.00, sigma: 0.015}
+    ab: {fator: 0.72, sigma: 0.10}
+    c: {fator: 0.92, sigma: 0.055}
+    de: {fator: 1.05, sigma: 0.075}
+    masculino: {fator: 0.74, sigma: 0.05}
+    feminino: {fator: 0.98, sigma: 0.04}
+    "4_17": {fator: 0.48, sigma: 0.14}
+    "18_34": {fator: 0.58, sigma: 0.09}
+    "35_49": {fator: 0.82, sigma: 0.07}
+    50_mais: {fator: 1.20, sigma: 0.05}
+  afinidade:
+    NOVELA: {feminino: 1.25, 50_mais: 1.20, masculino: 0.80, "18_34": 0.88}
+    FUTEBOL: {masculino: 1.50, feminino: 0.70, "4_17": 0.90}
+    REALITY SHOW: {"18_34": 1.40, feminino: 1.10, 50_mais: 0.80}
+    INFANTIL: {"4_17": 2.20, 50_mais: 0.55, masculino: 0.90}
+    JORNALISMO: {50_mais: 1.15, "4_17": 0.55, "18_34": 0.80}
+    FEMININO: {feminino: 1.40, masculino: 0.60}
+    RELIGIOSO: {50_mais: 1.35, "4_17": 0.50, "18_34": 0.65}
+    RURAL: {50_mais: 1.30, ab: 0.75, "18_34": 0.70}
+    SHOW: {"35_49": 1.10, 50_mais: 1.10}
+    FILME: {"18_34": 1.15, ab: 1.05}
+    SERIES: {ab: 1.25, "18_34": 1.15, 50_mais: 0.85}
+  campanha:
+    pracas: 20
+    pracas_tratadas: 8
+    semanas: 52
+    semana_inicio: 30
+    semana_fim: 37
+    efeito: 0.12
+    sazonalidade: 0.10
+    cadastros_base: [800, 2400]
+    sigma_semana: 0.035
+  grade_principal:
+    # blocos: [hora_inicio, hora_fim, categoria, faixa]
+    util:
+      - [6.0, 8.5, JORNALISMO, jornal_manha]
+      - [8.5, 10.0, INFANTIL, infantil_manha]
+      - [10.0, 12.0, FEMININO, revista_manha]
+      - [12.0, 13.5, JORNALISMO, jornal_almoco]
+      - [13.5, 15.0, REPORTAGEM, reportagem_tarde]
+      - [15.0, 17.5, FILME, sessao_tarde]
+      - [17.5, 18.5, NOVELA, novela_18h]
+      - [18.5, 19.25, JORNALISMO, jornal_local]
+      - [19.25, 20.25, NOVELA, novela_19h]
+      - [20.25, 21.25, JORNALISMO, jornal_noite]
+      - [21.25, 22.5, NOVELA, novela_21h]
+      - [22.5, 23.75, SERIES, serie_noite]
+      - [23.75, 25.0, ENTREVISTA, entrevista_noite]
+      - [25.0, 27.0, FILME, sessao_madrugada]
+      - [27.0, 30.0, RELIGIOSO, religioso_madrugada]
+    sabado:
+      - [6.0, 8.0, RURAL, rural_sabado]
+      - [8.0, 11.0, INFANTIL, infantil_sabado]
+      - [11.0, 12.0, ESPORTE, esporte_sabado]
+      - [12.0, 13.0, JORNALISMO, jornal_almoco]
+      - [13.0, 15.0, HUMORISTICO, humor_sabado]
+      - [15.0, 18.0, FILME, sessao_sabado]
+      - [18.0, 19.25, SHOW, auditorio_sabado]
+      - [19.25, 20.25, NOVELA, novela_19h]
+      - [20.25, 21.25, JORNALISMO, jornal_noite]
+      - [21.25, 22.5, NOVELA, novela_21h]
+      - [22.5, 25.0, FILME, filme_sabado]
+      - [25.0, 30.0, RELIGIOSO, religioso_madrugada]
+    domingo:
+      - [6.0, 8.0, RELIGIOSO, religioso_domingo]
+      - [8.0, 10.0, RURAL, rural_domingo]
+      - [10.0, 12.0, ESPORTE, esporte_domingo]
+      - [12.0, 16.0, SHOW, auditorio_domingo]
+      - [16.0, 18.0, FILME, sessao_domingo]
+      - [18.0, 20.0, REPORTAGEM, reportagem_domingo]
+      - [20.0, 23.0, SHOW, revista_domingo]
+      - [23.0, 25.0, FILME, filme_domingo]
+      - [25.0, 30.0, RELIGIOSO, religioso_madrugada]
+    # sobreposições na grade: categoria, faixa, dias da semana (0 = segunda), hora_inicio, hora_fim
+    futebol:
+      - {dows: [2], hora_inicio: 21.5, hora_fim: 23.75, faixa: futebol_quarta}
+      - {dows: [6], hora_inicio: 16.0, hora_fim: 18.0, faixa: futebol_domingo}
+    reality:
+      - {dows: [0, 1, 2, 3, 4, 5, 6], hora_inicio: 22.5, hora_fim: 23.75, faixa: reality_noite}
+  grade_concorrentes:
+    concorrente_a:
+      util:
+        - [6.0, 11.0, JORNALISMO]
+        - [11.0, 14.0, FEMININO]
+        - [14.0, 18.0, FILME]
+        - [18.0, 20.0, JORNALISMO]
+        - [20.0, 22.0, NOVELA]
+        - [22.0, 25.0, REALITY SHOW]
+        - [25.0, 30.0, RELIGIOSO]
+      sabado:
+        - [6.0, 12.0, INFANTIL]
+        - [12.0, 18.0, SHOW]
+        - [18.0, 22.0, FILME]
+        - [22.0, 30.0, RELIGIOSO]
+      domingo:
+        - [6.0, 13.0, RELIGIOSO]
+        - [13.0, 20.0, SHOW]
+        - [20.0, 23.0, REPORTAGEM]
+        - [23.0, 30.0, FILME]
+    concorrente_b:
+      util:
+        - [6.0, 9.0, JORNALISMO]
+        - [9.0, 13.0, INFANTIL]
+        - [13.0, 17.0, SHOW]
+        - [17.0, 19.0, REPORTAGEM]
+        - [19.0, 21.0, HUMORISTICO]
+        - [21.0, 23.0, FILME]
+        - [23.0, 30.0, JORNALISMO]
+      sabado:
+        - [6.0, 13.0, FEMININO]
+        - [13.0, 19.0, ESPORTE]
+        - [19.0, 23.0, FUTEBOL]
+        - [23.0, 30.0, SERIES]
+      domingo:
+        - [6.0, 12.0, RURAL]
+        - [12.0, 19.0, ESPORTE]
+        - [19.0, 23.0, FILME]
+        - [23.0, 30.0, ENTREVISTA]
+
+features:
+  max_dias_estreia: 365

@@ -4,3 +4,7 @@ herda: config.yaml
 
 caminhos:
   dados: data_smoke
+
+dados:
+  inicio: 2024-07-01
+  publicos: [total_dom, feminino]

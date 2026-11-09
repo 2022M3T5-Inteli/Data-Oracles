@@ -16,6 +16,13 @@ def test_smoke_herda_e_sobrescreve():
     assert "herda" not in cfg
 
 
+def test_nomes_de_publico_sao_texto():
+    """YAML lê 4_17 sem aspas como o número 417: um erro silencioso que este teste barra."""
+    cfg = carregar_config("configs/config.yaml")
+    assert all(isinstance(publico, str) for publico in cfg["dados"]["publicos"])
+    assert all(publico in cfg["gerador"]["publicos"] for publico in cfg["dados"]["publicos"])
+
+
 def test_pasta_dados_aceita_caminho_absoluto(tmp_path):
     cfg = {"caminhos": {"dados": str(tmp_path)}}
     assert pasta_dados(cfg) == tmp_path

@@ -1,0 +1,1 @@
+"""Construção da base analítica."""

@@ -1,0 +1,48 @@
+# CD e CT: ao entrar na main, e toda segunda, treina o modelo completo e publica os resultados.
+# Numa empresa, este mesmo fluxo apontaria para o MLflow/Databricks e para o data warehouse da casa,
+# em vez de um banco SQLite e de arquivos anexados à execução.
+name: CD
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 9 * * 1" # segunda-feira, 6h em Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MLFLOW_DISABLE_AGENT_HINT: "1"
+
+jobs:
+  treinar-e-publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Instalar
+        run: pip install -e .
+      - name: Preparar os dados
+        run: make dados validar features
+      - name: Treinar e passar pela porta de qualidade
+        run: make treinar
+      - name: Previsão em lote
+        run: make prever
+      - name: Monitorar
+        # O alerta aparece como aviso na execução e não impede a publicação dos resultados.
+        continue-on-error: true
+        run: python -m oraculo.monitoring.monitor --config configs/config.yaml --falhar-em-alerta
+      - name: Publicar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-oraculo
+          path: |
+            data/relatorios/
+            data/outputs/resumo_comercial.csv
+            mlflow.db

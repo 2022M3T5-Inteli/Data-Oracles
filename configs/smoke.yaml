@@ -1,0 +1,6 @@
+# Configuração de fumaça: o pipeline inteiro em segundos, para testes e CI.
+# Só declara o que muda em relação ao arquivo herdado.
+herda: config.yaml
+
+caminhos:
+  dados: data_smoke

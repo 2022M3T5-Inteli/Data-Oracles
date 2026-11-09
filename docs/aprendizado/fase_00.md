@@ -8,7 +8,7 @@ Nenhum código de produção foi escrito. Os notebooks não foram reexecutados, 
 Resultado: os 10 problemas da spec se confirmam, e apareceram 6 problemas novos. O mais grave é que a API ignorava quase todas as variáveis.
 Depois da leitura, removi das saídas dos notebooks as tabelas com linhas de audiência e de grade, porque os dados são confidenciais. Código, métricas, logs e gráficos continuam lá.
 
-**Como ler as referências:** "FE" é `notebooks/Feature_Engineering.ipynb` e "LGBM" é `notebooks/LightGBM_Avaliação_dos_Modelos_e_Hyperparâmetros.ipynb`. A numeração de células começa em 0.
+**Como ler as referências:** "FE" é `legado/notebooks/Feature_Engineering.ipynb` e "LGBM" é `legado/notebooks/LightGBM_Avaliação_dos_Modelos_e_Hyperparâmetros.ipynb`. A numeração de células começa em 0.
 
 ## O que o time fez em cada etapa, e por quê
 
@@ -22,7 +22,7 @@ O time seguiu o CRISP-DM, um roteiro que começa no negócio e termina na implan
 | Modelagem | Regressão linear, KNN, random forest, árvore e LightGBM | Comparar famílias de modelo diferentes | FE 75–98 e notebooks por modelo |
 | Ajuste | GridSearch e RandomSearch no KNN; Optuna via verstack no LightGBM | Extrair o melhor de cada modelo | KNN 20–24, LGBM 18–25 |
 | Avaliação | R² e MSE em treino e teste; LightGBM escolhido | Escolher o modelo final | LGBM 14, PDF §4.5–4.6 e §5 |
-| Implantação | Pickle no Drive → API Flask → Docker → Fly.io → site React | Dar acesso a quem não programa | `src/backend/`, `src/frontend/` |
+| Implantação | Pickle no Drive → API Flask → Docker → Fly.io → site React | Dar acesso a quem não programa | `legado/backend/`, `legado/frontend/` |
 
 ## Diagnóstico conferido (`00_visao_geral.md` §1)
 
@@ -31,14 +31,14 @@ O time seguiu o CRISP-DM, um roteiro que começa no negócio e termina na implan
 | Pergunta de negócio | Confirmado | `README.md` linha 19; PDF §2.1 |
 | Usuário | Confirmado | PDF §4.1.6 |
 | Dados | Confirmado, com ajuste | PDF §4.2; FE 4 e 15. O período tem 760 dias (1/6/2020 a 30/6/2022), cerca de 25 meses, e não 24 |
-| Alvos | Confirmado | `src/backend/modelo_geral.py:18-38`; fidelidade comentada nas linhas 25–32 |
-| Variáveis | Confirmado, com ajuste | `src/backend/modelos.py:67`; LGBM 6. Ver "blocos de 15 min" abaixo |
+| Alvos | Confirmado | `legado/backend/modelo_geral.py:18-38`; fidelidade comentada nas linhas 25–32 |
+| Variáveis | Confirmado, com ajuste | `legado/backend/modelos.py:67`; LGBM 6. Ver "blocos de 15 min" abaixo |
 | Modelos | Confirmado | FE 75, 81, 84, 90 e 96; LGBM 13 |
 | Ajuste de hiperparâmetros | Confirmado, com ajuste | LGBM 21, 23 e 25: o ajuste usou só o público Total, e os parâmetros valeram para os 14 |
 | Validação | Confirmado | LGBM 9; FE 62; KNN 8; Random Forest 8; Árvore 8. Sem `test_size`, vale o padrão de 25% |
 | Métricas | Confirmado | LGBM 14 |
 | Resultado | Confirmado, com ajuste | LGBM 14. Sobre fidelidade, ver a seção de resultados |
-| Entrega | Confirmado, com ajuste | LGBM 28; `src/backend/app.py:80,100`; `src/backend/Dockerfile`; `src/backend/fly.toml`. Ver achado 6 |
+| Entrega | Confirmado, com ajuste | LGBM 28; `legado/backend/app.py:80,100`; `legado/backend/Dockerfile`; `legado/backend/fly.toml`. Ver achado 6 |
 
 **Ajuste sobre os "blocos de 15 min".** FE 37–38 só arredondam o rótulo da hora. As linhas continuam de 5 em 5 minutos, sem agregação (a saída de LGBM 2 mostrava três linhas por rótulo, antes da limpeza descrita em "O que foi feito"). Por isso, três linhas têm as mesmas variáveis e alvos diferentes.
 
@@ -63,7 +63,7 @@ O time seguiu o CRISP-DM, um roteiro que começa no negócio e termina na implan
 
 ### 1. A API ignorava data, feriado e categoria (grave)
 
-Em `src/backend/modelo_geral.py:66` e `:76`, o código faz `X[0] = start`. `X` é uma matriz com uma linha, então `X[0]` é a linha inteira. A intenção era trocar só a hora, com `X[0][0] = start`.
+Em `legado/backend/modelo_geral.py:66` e `:76`, o código faz `X[0] = start`. `X` é uma matriz com uma linha, então `X[0]` é a linha inteira. A intenção era trocar só a hora, com `X[0][0] = start`.
 
 Testei a classe real com um modelo falso que registra o que recebe:
 
@@ -107,7 +107,7 @@ Existe um argumento defensável: o KNN levou 27 minutos em FE 81 e precisa guard
 
 - O `Dockerfile` instala `requirements.txt`, que não tem `lightgbm`. O pacote está só em `requirementsv2.txt`.
 - O `fly.toml` espera a porta 8080, e `flask run` usa a 5000.
-- O front-end aponta para `localhost:5000` (`src/frontend/src/data/oracle.tsx:3`).
+- O front-end aponta para `localhost:5000` (`legado/frontend/src/data/oracle.tsx:3`).
 - Os modelos estão fora do Git.
 
 Dois detalhes menores: a API devolvia a média de uma hora inteira, e não de 15 minutos. E o minuto 5 gera a chave `20:5:00`, que não existe no dicionário (o site só oferecia horas cheias, então isso não chegava a aparecer).

@@ -1,0 +1,5 @@
+# Configuração completa. Todo parâmetro do projeto mora aqui: nada de número mágico no código.
+seed: 42
+
+caminhos:
+  dados: data

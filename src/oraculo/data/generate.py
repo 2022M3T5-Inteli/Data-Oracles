@@ -18,7 +18,6 @@ from oraculo.config import argumentos_cli, carregar_config, pasta_dados
 log = logging.getLogger(__name__)
 
 DIAS_NO_ANO = 365.25
-SEMANA_ISO_MEIO_DE_ANO = 26
 
 
 def eixo_horas(dados: dict[str, Any]) -> np.ndarray:
@@ -275,7 +274,6 @@ def gerar_campanha(cfg: dict[str, Any], rng: np.random.Generator) -> pd.DataFram
         for semana in semanas:
             pos = int(campanha["semana_inicio"] <= semana <= campanha["semana_fim"])
             tratado = int(praca in tratadas)
-            fator_ano = 1 + 0.05 * np.sin(2 * np.pi * (semana - SEMANA_ISO_MEIO_DE_ANO) / campanha["semanas"])
             sazonal = 1 + campanha["sazonalidade"] * pos
             efeito = 1 + campanha["efeito"] * tratado * pos
             ruido = rng.lognormal(0.0, campanha["sigma_semana"])
@@ -285,7 +283,7 @@ def gerar_campanha(cfg: dict[str, Any], rng: np.random.Generator) -> pd.DataFram
                     "semana": int(semana),
                     "tratado": tratado,
                     "pos": pos,
-                    "cadastros": int(round(base * fator_ano * sazonal * efeito * ruido)),
+                    "cadastros": int(round(base * sazonal * efeito * ruido)),
                 }
             )
     return pd.DataFrame(linhas)

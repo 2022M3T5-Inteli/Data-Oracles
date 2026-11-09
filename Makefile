@@ -16,6 +16,10 @@ endif
 PYTHON ?= $(if $(wildcard $(VENV_PY)),$(VENV_PY),python)
 CONFIG ?= configs/config.yaml
 IMAGEM ?= oraculo-mlops
+# Valor ilustrativo da campanha simulada, em reais
+INVESTIMENTO ?= 150000
+SEMENTE ?= 42
+PERMUTACOES ?= 999
 
 .PHONY: setup dados validar features treinar prever monitorar pipeline smoke test lint formatar \
         mlflow-ui incrementalidade docker-build docker-run limpar
@@ -64,7 +68,7 @@ mlflow-ui:
 	$(PYTHON) -m mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
 
 incrementalidade:
-	Rscript r/incrementalidade_did.R data/raw/campanha_praca.csv
+	Rscript r/incrementalidade_did.R data/raw/campanha_praca.csv $(INVESTIMENTO) $(SEMENTE) $(PERMUTACOES)
 
 docker-build:
 	docker build -t $(IMAGEM) .

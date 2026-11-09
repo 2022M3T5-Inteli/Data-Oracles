@@ -238,3 +238,27 @@ gerador:
 
 features:
   max_dias_estreia: 365
+
+modelo:
+  alvo: rating
+  quantis: {p10: 0.1, p50: 0.5, p90: 0.9}
+  nivel_faixa: 0.8
+  horario_nobre: [19.0, 23.0]
+  lgbm:
+    n_estimators: 300
+    learning_rate: 0.05
+    num_leaves: 63
+    min_child_samples: 50
+    subsample: 0.8
+    subsample_freq: 1
+    colsample_bytree: 0.8
+    reg_lambda: 5.0
+    n_jobs: -1
+    verbosity: -1
+  backtest:
+    cortes: [2024-03-31, 2024-06-30, 2024-09-30, 2024-12-03]
+  split_aleatorio:
+    proporcao_teste: 0.25
+  shap:
+    amostra: 3000
+    top: 15

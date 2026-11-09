@@ -8,3 +8,13 @@ caminhos:
 dados:
   inicio: 2024-07-01
   publicos: [total_dom, feminino]
+
+modelo:
+  lgbm:
+    n_estimators: 60
+    num_leaves: 15
+    min_child_samples: 20
+  backtest:
+    cortes: [2024-10-31, 2024-12-03]
+  shap:
+    amostra: 200

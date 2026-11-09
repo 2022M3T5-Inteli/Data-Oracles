@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import json
 import logging
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
 import lightgbm as lgb
 import matplotlib
+import mlflow
+import mlflow.pyfunc
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -29,7 +32,8 @@ from oraculo.models.evaluate import (  # noqa: E402
     r2,
     wape,
 )
-from oraculo.models.pyfunc import NOMES_QUANTIS, prever_boosters  # noqa: E402
+from oraculo.models.pyfunc import ARTEFATO_CONFORMAL, NOMES_QUANTIS, OraculoModel, prever_boosters  # noqa: E402
+from oraculo.models.registro import configurar_mlflow, versao_campea  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -155,6 +159,93 @@ def montar_relatorio(backtest: pd.DataFrame, cfg: dict[str, Any], aleatorio: dic
     }
 
 
+def porta_qualidade(
+    relatorio: dict[str, Any], porta: dict[str, float], wape_campeao: float | None
+) -> tuple[bool, list[str]]:
+    """Três regras para um candidato virar champion. Devolve o veredito e os motivos de reprovação."""
+    geral = relatorio["backtest_geral"]
+    motivos = []
+    wape_maximo = geral["wape_baseline"] * (1 - porta["melhoria_minima_vs_baseline"])
+    if geral["wape"] > wape_maximo:
+        motivos.append(
+            f"WAPE {geral['wape']:.4f} não bate o baseline com a melhoria exigida (máximo {wape_maximo:.4f})"
+        )
+    # A faixa entregue ao comercial é a calibrada, então é ela que precisa cumprir a cobertura.
+    cobertura_faixa = relatorio["conformal"]["cobertura_depois"]
+    if cobertura_faixa < porta["cobertura_min"]:
+        motivos.append(f"Cobertura da faixa {cobertura_faixa:.4f} abaixo do mínimo {porta['cobertura_min']}")
+    if wape_campeao is not None and geral["wape"] > wape_campeao * (1 + porta["tolerancia_vs_campeao"]):
+        motivos.append(f"WAPE {geral['wape']:.4f} pior que o do campeão atual ({wape_campeao:.4f})")
+    return not motivos, motivos
+
+
+def _metricas_mlflow(relatorio: dict[str, Any]) -> dict[str, float]:
+    metricas = {f"backtest_{k}": v for k, v in relatorio["backtest_geral"].items()}
+    metricas.update({f"nobre_{k}": v for k, v in relatorio["backtest_horario_nobre"].items()})
+    metricas.update({f"conformal_{k}": v for k, v in relatorio["conformal"].items()})
+    metricas.update({f"split_aleatorio_{k}": v for k, v in relatorio["split_aleatorio"].items()})
+    return metricas
+
+
+def _parametros_mlflow(cfg: dict[str, Any]) -> dict[str, Any]:
+    return {
+        **cfg["modelo"]["lgbm"],
+        "horizonte_dias": cfg["horizonte_dias"],
+        "quantis": ",".join(str(q) for q in cfg["modelo"]["quantis"].values()),
+        "fim_historico": str(cfg["dados"]["fim_historico"]),
+        "seed": cfg["seed"],
+    }
+
+
+def registrar_no_mlflow(
+    cfg: dict[str, Any], relatorio: dict[str, Any], arquivos: dict[str, Path], pasta_modelo: Path, base: pd.DataFrame
+) -> dict[str, Any]:
+    """Registra o treino; se passar pela porta de qualidade, o modelo vira champion."""
+    cliente = configurar_mlflow(cfg)
+    mlops = cfg["mlops"]
+    campea = versao_campea(cliente, cfg)
+    wape_campeao = cliente.get_run(campea.run_id).data.metrics.get("backtest_wape") if campea else None
+    aprovado, motivos = porta_qualidade(relatorio, mlops["porta"], wape_campeao)
+
+    exemplo = base[VARIAVEIS_MODELO].head(5).copy()
+    for coluna in exemplo.select_dtypes("category"):
+        exemplo[coluna] = exemplo[coluna].astype(str)
+    artefatos = {nome: str(pasta_modelo / f"{nome}.txt") for nome in NOMES_QUANTIS}
+    artefatos[ARTEFATO_CONFORMAL] = str(arquivos["conformal"])
+    dependencias = [f"{pacote}=={version(pacote)}" for pacote in ("lightgbm", "numpy", "pandas", "mlflow", "duckdb")]
+
+    with mlflow.start_run() as run:
+        mlflow.log_params(_parametros_mlflow(cfg))
+        mlflow.log_metrics(_metricas_mlflow(relatorio))
+        for caminho in arquivos.values():
+            mlflow.log_artifact(str(caminho))
+        modelo = mlflow.pyfunc.log_model(
+            name="modelo",
+            python_model=OraculoModel(),
+            artifacts=artefatos,
+            input_example=exemplo,
+            pip_requirements=dependencias,
+        )
+        mlflow.set_tag("porta_qualidade", "aprovado" if aprovado else "reprovado")
+        if motivos:
+            mlflow.set_tag("porta_motivos", " | ".join(motivos))
+        versao = None
+        if aprovado:
+            versao = mlflow.register_model(modelo.model_uri, mlops["nome_modelo"]).version
+            cliente.set_registered_model_alias(mlops["nome_modelo"], mlops["alias_campeao"], versao)
+    if aprovado:
+        log.info("Porta de qualidade: APROVADO. Versão %s agora é %s.", versao, mlops["alias_campeao"])
+    else:
+        log.warning("Porta de qualidade: REPROVADO. O champion anterior continua. Motivos: %s", motivos)
+    return {
+        "aprovado": aprovado,
+        "motivos": motivos,
+        "versao_registrada": versao,
+        "run_id": run.info.run_id,
+        "wape_campeao_anterior": wape_campeao,
+    }
+
+
 def treinar(cfg: dict[str, Any]) -> dict[str, Any]:
     """Executa a avaliação completa, treina o modelo final e grava os relatórios."""
     raiz = pasta_dados(cfg)
@@ -203,6 +294,8 @@ def treinar(cfg: dict[str, Any]) -> dict[str, Any]:
         100 * geral["cobertura"],
     )
     log.info("Split aleatório (como em 2022): WAPE %.1f%% | R² %.3f", 100 * aleatorio["wape"], aleatorio["r2"])
+    relatorio["porta_qualidade"] = registrar_no_mlflow(cfg, relatorio, arquivos, pasta_modelo, base)
+    arquivos["relatorio"].write_text(json.dumps(relatorio, ensure_ascii=False, indent=2), encoding="utf-8")
     return relatorio
 
 

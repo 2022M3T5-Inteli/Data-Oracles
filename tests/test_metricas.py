@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from oraculo.features.build import VARIAVEIS_CATEGORICAS, VARIAVEIS_MODELO
 from oraculo.models.evaluate import (
     aplicar_conformal,
     calibrar_conformal,
@@ -17,7 +18,8 @@ from oraculo.models.evaluate import (
     vies,
     wape,
 )
-from oraculo.models.pyfunc import ordenar_quantis
+from oraculo.models.pyfunc import OraculoModel, ordenar_quantis
+from oraculo.monitoring.monitor import psi_categorico, psi_numerico
 
 REAL = np.array([10.0, 20.0, 30.0])
 PREVISTO = np.array([12.0, 18.0, 33.0])
@@ -75,3 +77,38 @@ def test_conformal_atinge_a_cobertura_pedida():
 def test_conformal_nao_gera_p10_negativo():
     p10, _ = aplicar_conformal(np.array([0.5]), np.array([2.0]), np.array(["a"], dtype=object), {"a": 3.0})
     assert p10[0] == 0.0
+
+
+def test_psi_estavel_e_baixo():
+    rng = np.random.default_rng(2)
+    assert psi_numerico(pd.Series(rng.normal(0, 1, 50_000)), pd.Series(rng.normal(0, 1, 50_000))) < 0.05
+
+
+def test_psi_detecta_deslocamento():
+    rng = np.random.default_rng(3)
+    assert psi_numerico(pd.Series(rng.normal(0, 1, 50_000)), pd.Series(rng.normal(1, 1, 50_000))) > 0.2
+
+
+def test_psi_categorico():
+    igual = pd.Series(["a"] * 50 + ["b"] * 50)
+    mudou = pd.Series(["a"] * 95 + ["c"] * 5)
+    assert psi_categorico(igual, igual) == pytest.approx(0.0)
+    assert psi_categorico(igual, mudou) > 0.2
+
+
+def test_modelo_mantem_a_mediana_dentro_da_faixa_com_ajuste_negativo():
+    """Faixa larga demais gera ajuste negativo, que não pode empurrar o p10 acima do p50."""
+
+    class BoosterFixo:
+        def __init__(self, valor):
+            self.valor = valor
+
+        def predict(self, tabela):
+            return np.full(len(tabela), self.valor)
+
+    modelo = OraculoModel()
+    modelo.boosters = {"p10": BoosterFixo(4.9), "p50": BoosterFixo(5.0), "p90": BoosterFixo(5.1)}
+    modelo.ajustes = {"a": -1.0}
+    colunas = {coluna: [1.0] for coluna in VARIAVEIS_MODELO} | {c: ["a"] for c in VARIAVEIS_CATEGORICAS}
+    saida = modelo.predict(None, pd.DataFrame(colunas))
+    assert saida["p10"].iloc[0] <= saida["p50"].iloc[0] <= saida["p90"].iloc[0]

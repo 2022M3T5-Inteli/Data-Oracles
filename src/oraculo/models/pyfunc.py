@@ -46,4 +46,8 @@ class OraculoModel(mlflow.pyfunc.PythonModel):
     def predict(self, context, model_input: pd.DataFrame, params=None):
         previsoes = prever_boosters(self.boosters, model_input)
         p10, p90 = aplicar_conformal(previsoes[:, 0], previsoes[:, 2], model_input["publico"].to_numpy(), self.ajustes)
-        return pd.DataFrame({"p10": p10, "p50": previsoes[:, 1], "p90": p90}, index=model_input.index)
+        p50 = previsoes[:, 1]
+        # Um ajuste negativo estreita a faixa: a mediana precisa continuar dentro dela.
+        return pd.DataFrame(
+            {"p10": np.minimum(p10, p50), "p50": p50, "p90": np.maximum(p90, p50)}, index=model_input.index
+        )

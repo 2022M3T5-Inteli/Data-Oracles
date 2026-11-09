@@ -18,3 +18,11 @@ modelo:
     cortes: [2024-10-31, 2024-12-03]
   shap:
     amostra: 200
+
+mlops:
+  tracking_uri: sqlite:///mlflow_smoke.db
+  pasta_artefatos: data_smoke/mlruns
+  porta:
+    melhoria_minima_vs_baseline: -10.0
+    cobertura_min: 0.0
+    tolerancia_vs_campeao: 10.0
